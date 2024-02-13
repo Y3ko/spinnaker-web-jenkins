@@ -15,7 +15,7 @@ pipeline {
         kubernetesDeploy(
           configs: 'nginx-deployment.yaml',
           kubeconfigId: 'my-kubeconfig', // Jenkins yapılandırmasında tanımlı kubeconfig kimliği
-          namespace: ${NAMESPACE}, // Değişkeni kullanın
+          namespace: ${NAMESPACE},
         )
       }
     }
@@ -25,7 +25,7 @@ pipeline {
         kubernetesDeploy(
           configs: 'nginx-ingress.yaml',
           kubeconfigId: 'my-kubeconfig', // Jenkins yapılandırmasında tanımlı kubeconfig kimliği
-          namespace: ${NAMESPACE}, // Değişkeni kullanın
+          namespace: ${NAMESPACE},
         )
       }
     }
@@ -33,7 +33,7 @@ pipeline {
       steps {
         // Ingress adresini al
         script {
-          ingress = kubectl get ingress -n $NAMESPACE | grep -E '^NAME\s+' | awk '{print $2}'
+          ingress = kubectl get ingress -n "$NAMESPACE" | grep -E '^NAME\s+' | awk '{print $2}'
           echo "Ingress adresi: $ingress"
         }
       }
