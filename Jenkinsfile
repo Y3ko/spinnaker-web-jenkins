@@ -49,7 +49,7 @@ pipeline {
         failure {
             echo 'Nginx podu veya Ingress dağıtılırken veya test edilirken hata oluştu.'
             echo 'Hata ayrıntıları:'
-            echo build.getPreviousBuild().getCauses()
+            echo error
         }
     }
 }
