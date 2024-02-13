@@ -15,7 +15,7 @@ pipeline {
         kubernetesDeploy(
           configs: 'nginx-deployment.yaml',
           kubeconfigId: 'my-kubeconfig', // Jenkins yapılandırmasında tanımlı kubeconfig kimliği
-          **namespace: ${NAMESPACE}**, // Değişkeni kullanın
+          namespace: ${NAMESPACE}, // Değişkeni kullanın
         )
       }
     }
