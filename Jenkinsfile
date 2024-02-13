@@ -1,41 +1,38 @@
 pipeline {
-    agent {
-        kubernetes {
-            label 'my-kubernetes-label'
-        }
+  agent {
+    kubernetes {
+      yaml '''
+        apiVersion: v1
+        kind: Pod
+        metadata:
+          labels:
+            some-label: some-label-value
+        spec:
+          containers:
+          - name: maven
+            image: maven:alpine
+            command:
+            - cat
+            tty: true
+          - name: busybox
+            image: busybox
+            command:
+            - cat
+            tty: true
+        '''
+      retries 2
     }
-    
-    environment {
-        NAMESPACE = 'default'
-        APP_NAME = 'nginx-webapp'
+  }
+  stages {
+    stage('Run maven') {
+      steps {
+        container('maven') {
+          sh 'mvn -version'
+        }
+        container('busybox') {
+          sh '/bin/busybox'
+        }
+      }
     }
-
-    stages {
-        stage('Deploy Nginx') {
-            steps {
-                kubernetesDeploy(configs: 'nginx-deployment.yaml')
-            }
-        }
-        stage('Deploy Ingress') {
-            steps {
-                kubernetesDeploy(configs: 'nginx-ingress.yaml')
-            }
-        }
-        stage('Test') {
-            steps {
-                sh "kubectl get ingress -n $NAMESPACE"
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'Nginx podu ve Ingress başarıyla dağıtıldı ve test edildi!'
-        }
-        failure {
-            echo 'Nginx podu veya Ingress dağıtılırken veya test edilirken hata oluştu.'
-            echo 'Hata ayrıntıları:'
-            echo error
-        }
-    }
+  }
 }
