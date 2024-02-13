@@ -16,8 +16,9 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 kubernetesDeploy(
-                    // Assume both YAML files are in the same directory as the Jenkinsfile:
-                    configs: 'nginx-deployment.yaml', 'nginx-ingress.yaml',
+                    // YAML dosyalarını bir dizi olarak belirtin
+                    configs: ['nginx-deployment.yaml', 'nginx-ingress.yaml'],
+                    // Kubeconfig kimlik bilgisini belirtin
                     kubeconfigId: 'kubernetes',
                 )
             }
