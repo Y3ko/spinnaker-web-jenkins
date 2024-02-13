@@ -12,17 +12,21 @@ pipeline {
         stage('Deploy Nginx') {
             steps {
                 // Nginx podunu Kubernetes'e dağıt
-                script {
-                    sh "kubectl apply -f nginx-deployment.yaml -n $NAMESPACE"
-                }
+                kubernetesDeploy(
+                    configs: 'nginx-deployment.yaml',
+                    kubeconfigId: 'my-kubeconfig', // Jenkins yapılandırmasında tanımlı kubeconfig kimliği
+                    namespace: NAMESPACE
+                )
             }
         }
         stage('Deploy Ingress') {
             steps {
                 // Ingress kaynağını oluştur ve Kubernetes'e uygula
-                script {
-                    sh "kubectl apply -f nginx-ingress.yaml -n $NAMESPACE"
-                }
+                kubernetesDeploy(
+                    configs: 'nginx-ingress.yaml',
+                    kubeconfigId: 'my-kubeconfig', // Jenkins yapılandırmasında tanımlı kubeconfig kimliği
+                    namespace: NAMESPACE
+                )
             }
         }
         stage('Test') {
