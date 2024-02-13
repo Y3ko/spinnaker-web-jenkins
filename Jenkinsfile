@@ -1,7 +1,7 @@
 pipeline {
     agent {
         kubernetes {
-            // Use 'label' with a single quote if there are spaces: label 'my-kubernetes-agent'
+            // Doğru kullanım: label 'my-kubernetes-agent'
             label 'my-kubernetes-agent'
         }
     }
@@ -9,16 +9,20 @@ pipeline {
     stages {
         stage('Clone repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/Y3ko/spinnaker-web-jenkins'
+                // 'checkout' adımını kullanarak git reposunu klonlayın.
+                // 'branch' ve 'url' parametrelerini doğru şekilde kullanımı.
+                checkout scm: [$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/Y3ko/spinnaker-web-jenkins']]]
             }
         }
         stage('Deploy to Kubernetes') {
             steps {
                 script {
+                    // Dizileri birleştirme ve 'kubernetesDeploy' adımının doğru kullanımı.
                     def configs = ['nginx-deployment.yaml', 'nginx-ingress.yaml'].join(',')
-                    // Yukarıdaki satır, diziyi virgülle ayrılmış bir dizeye dönüştürür
+                    // Kubernetes'e dağıtım yapmak için 'kubernetesDeploy' fonksiyonunun doğru kullanımı.
+                    // Burada parantez dengesine dikkat etmek önemli.
                     kubernetesDeploy(configs: configs, kubeconfigId: 'kubernetes')
-                )
+                }
             }
         }
     }
