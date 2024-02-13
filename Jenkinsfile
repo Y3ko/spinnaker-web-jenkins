@@ -15,9 +15,8 @@ pipeline {
     stage('Deploy to Kubernetes') {
       steps {
         kubernetesDeploy(
-          configs: 'spinnaker-web-jenkins/nginx-deployment.yaml', 
-          kubeconfigId: 'my-kubeconfig', 
-          enableConfigSubstitution: true
+          configs: 'spinnaker-web-jenkins/nginx-deployment.yaml', 'spinnaker-web-jenkins/nginx-ingress.yaml',
+          kubeconfigId: 'kubernetes'
         )
       }
     }
