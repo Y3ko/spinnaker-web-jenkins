@@ -2,39 +2,39 @@ pipeline {
   agent any
 
   environment {
-    // Kubernetes namespace'ini belirtin
+    // Specify Kubernetes namespace
     NAMESPACE = 'default'
-    // Uygulama adını belirtin
+    // Specify application name
     APP_NAME = 'nginx-webapp'
   }
 
   stages {
     stage('Deploy Nginx') {
       steps {
-        // Nginx podunu Kubernetes'e dağıt
+        // Deploy Nginx pod to Kubernetes
         kubernetesDeploy(
-          configs: 'nginx-deployment.yaml',
-          kubeconfigId: 'my-kubeconfig', // Jenkins yapılandırmasında tanımlı kubeconfig kimliği
-          namespace: ${NAMESPACE},
+          configs: 'nginx-deployment.yaml', // Adjust the path to your deployment YAML file
+          kubeconfigId: 'my-kubeconfig', // Kubernetes configuration ID defined in Jenkins configuration
+          namespace: "${env.NAMESPACE}" // Use proper syntax to access environment variable
         )
       }
     }
     stage('Deploy Ingress') {
       steps {
-        // Ingress kaynağını oluştur ve Kubernetes'e uygula
+        // Create and apply Ingress resource to Kubernetes
         kubernetesDeploy(
-          configs: 'nginx-ingress.yaml',
-          kubeconfigId: 'my-kubeconfig', // Jenkins yapılandırmasında tanımlı kubeconfig kimliği
-          namespace: ${NAMESPACE},
+          configs: 'nginx-ingress.yaml', // Adjust the path to your Ingress YAML file
+          kubeconfigId: 'my-kubeconfig', // Kubernetes configuration ID defined in Jenkins configuration
+          namespace: "${env.NAMESPACE}" // Use proper syntax to access environment variable
         )
       }
     }
     stage('Test') {
       steps {
-        // Ingress adresini al
+        // Get Ingress address
         script {
-          ingress = kubectl get ingress -n "$NAMESPACE" | grep -E '^NAME\s+' | awk '{print $2}'
-          echo "Ingress adresi: $ingress"
+          def ingress = sh(script: "kubectl get ingress -n ${env.NAMESPACE} -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}'", returnStdout: true).trim()
+          echo "Ingress address: $ingress"
         }
       }
     }
@@ -42,11 +42,11 @@ pipeline {
 
   post {
     success {
-      echo 'Nginx podu ve Ingress başarıyla dağıtıldı ve test edildi!'
+      echo 'Nginx pod and Ingress successfully deployed and tested!'
     }
     failure {
-      echo 'Nginx podu veya Ingress dağıtılırken veya test edilirken hata oluştu.'
-      echo 'Hata ayrıntıları:'
+      echo 'Error occurred while deploying Nginx pod or Ingress or during testing.'
+      echo 'Error details:'
       echo build.getPreviousBuild().getCauses()
     }
   }
