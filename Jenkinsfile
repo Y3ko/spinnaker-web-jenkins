@@ -12,15 +12,12 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/Y3ko/spinnaker-web-jenkins'
             }
         }
-
         stage('Deploy to Kubernetes') {
             steps {
-                kubernetesDeploy(
-                    // YAML dosyalarını bir dizi olarak belirtin
-                    configs: ['nginx-deployment.yaml', 'nginx-ingress.yaml'],
-                    // Kubeconfig kimlik bilgisini belirtin
-                    kubeconfigId: 'kubernetes',
-                    // Gerekirse kimlik doğrulaması için kimlik bilgilerini belirtin
+                script {
+                    def configs = ['nginx-deployment.yaml', 'nginx-ingress.yaml'].join(',')
+                    // Yukarıdaki satır, diziyi virgülle ayrılmış bir dizeye dönüştürür
+                    kubernetesDeploy(configs: configs, kubeconfigId: 'kubernetes')
                 )
             }
         }
