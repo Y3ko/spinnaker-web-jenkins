@@ -20,6 +20,7 @@ pipeline {
                     configs: ['nginx-deployment.yaml', 'nginx-ingress.yaml'],
                     // Kubeconfig kimlik bilgisini belirtin
                     kubeconfigId: 'kubernetes',
+                    // Gerekirse kimlik doğrulaması için kimlik bilgilerini belirtin
                 )
             }
         }
