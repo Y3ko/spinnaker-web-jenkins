@@ -1,7 +1,9 @@
 pipeline {
+    agent {
         kubernetes {
             label 'my-kubernetes-label'
         }
+    }
     
     environment {
         NAMESPACE = 'default'
