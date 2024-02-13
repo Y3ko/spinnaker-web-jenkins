@@ -14,24 +14,30 @@ pipeline {
         stage('Deploy Nginx') {
             steps {
                 // Kubeconfig dosyasını ekleyerek Nginx podunu Kubernetes'e dağıt
-                script {
-                    sh "KUBECONFIG=$KUBECONFIG_PATH kubectl apply -f nginx-deployment.yaml -n $NAMESPACE"
+                container('kube') {
+                    script {
+                        sh "kubectl --kubeconfig=$KUBECONFIG_PATH apply -f nginx-deployment.yaml -n $NAMESPACE"
+                    }
                 }
             }
         }
         stage('Deploy Ingress') {
             steps {
                 // Kubeconfig dosyasını ekleyerek Ingress kaynağını oluştur ve Kubernetes'e uygula
-                script {
-                    sh "KUBECONFIG=$KUBECONFIG_PATH kubectl apply -f nginx-ingress.yaml -n $NAMESPACE"
+                container('kube') {
+                    script {
+                        sh "kubectl --kubeconfig=$KUBECONFIG_PATH apply -f nginx-ingress.yaml -n $NAMESPACE"
+                    }
                 }
             }
         }
         stage('Test') {
             steps {
                 // Kubeconfig dosyasını ekleyerek Ingress adresini al
-                script {
-                    sh "KUBECONFIG=$KUBECONFIG_PATH kubectl get ingress -n $NAMESPACE"
+                container('kube') {
+                    script {
+                        sh "kubectl --kubeconfig=$KUBECONFIG_PATH get ingress -n $NAMESPACE"
+                    }
                 }
             }
         }
