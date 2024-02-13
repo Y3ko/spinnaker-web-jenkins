@@ -18,7 +18,7 @@ pipeline {
             steps {
                 script {
                     // Dizileri birleştirme ve 'kubernetesDeploy' adımının doğru kullanımı.
-                    def configs = ['nginx-deployment.yaml', 'nginx-ingress.yaml'].join(',')
+                    def configs = ['nginx-deployment.yaml'].join(',')
                     // Kubernetes'e dağıtım yapmak için 'kubernetesDeploy' fonksiyonunun doğru kullanımı.
                     // Burada parantez dengesine dikkat etmek önemli.
                     kubernetesDeploy(configs: configs, kubeconfigId: 'kubernetes')
