@@ -1,19 +1,19 @@
 pipeline {
-    agent any
+    agent {
+        kubernetes {
+            label 'my-kubernetes-label'
+        }
+    }
     
     environment {
-        // Kubernetes namespace'ini belirtin
         NAMESPACE = 'default'
-        // Uygulama adını belirtin
         APP_NAME = 'nginx-webapp'
-        // Kubeconfig dosyasının yolunu belirtin
         KUBECONFIG_PATH = credentials('kubeconfig')
     }
 
     stages {
         stage('Deploy Nginx') {
             steps {
-                // Kubeconfig dosyasını ekleyerek Nginx podunu Kubernetes'e dağıt
                 kubernetesDeploy(
                     kubeconfigId: 'kubeconfig',
                     configs: 'nginx-deployment.yaml',
@@ -23,7 +23,6 @@ pipeline {
         }
         stage('Deploy Ingress') {
             steps {
-                // Kubeconfig dosyasını ekleyerek Ingress kaynağını oluştur ve Kubernetes'e uygula
                 kubernetesDeploy(
                     kubeconfigId: 'kubeconfig',
                     configs: 'nginx-ingress.yaml',
@@ -33,7 +32,6 @@ pipeline {
         }
         stage('Test') {
             steps {
-                // Kubeconfig dosyasını ekleyerek Ingress adresini al
                 sh "kubectl --kubeconfig=$KUBECONFIG_PATH get ingress -n $NAMESPACE"
             }
         }
