@@ -34,7 +34,7 @@ pipeline {
 
         kubernetesDeploy(
 
-          configs: 'spinnaker-web-jenkins/nginx-deployment.yaml','spinnaker-web-jenkins/nginx-ingress.yaml'
+          configs: 'spinnaker-web-jenkins/nginx-deployment.yaml','spinnaker-web-jenkins/nginx-ingress.yaml',
 
           kubeconfigId: 'my-kubeconfig'
 
