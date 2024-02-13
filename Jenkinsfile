@@ -8,15 +8,14 @@ pipeline {
     environment {
         NAMESPACE = 'default'
         APP_NAME = 'nginx-webapp'
-        KUBECONFIG_PATH = credentials('kubeconfig')
     }
 
     stages {
         stage('Deploy Nginx') {
             steps {
                 kubernetesDeploy(
-                    kubeconfigId: 'kubeconfig',
                     configs: 'nginx-deployment.yaml',
+                    kubeconfigId: '',
                     namespace: 'default'
                 )
             }
@@ -24,15 +23,15 @@ pipeline {
         stage('Deploy Ingress') {
             steps {
                 kubernetesDeploy(
-                    kubeconfigId: 'kubeconfig',
                     configs: 'nginx-ingress.yaml',
+                    kubeconfigId: '',
                     namespace: 'default'
                 )
             }
         }
         stage('Test') {
             steps {
-                sh "kubectl --kubeconfig=$KUBECONFIG_PATH get ingress -n $NAMESPACE"
+                sh "kubectl get ingress -n $NAMESPACE"
             }
         }
     }
