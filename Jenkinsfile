@@ -1,53 +1,48 @@
 pipeline {
-  agent any
-
-  environment {
-    // Specify Kubernetes namespace
-    NAMESPACE = 'default'
-    // Specify application name
-    APP_NAME = 'nginx-webapp'
-  }
-
-  stages {
-    stage('Deploy Nginx') {
-      steps {
-        // Deploy Nginx pod to Kubernetes
-        kubernetesDeploy(
-          configs: 'nginx-deployment.yaml', // Adjust the path to your deployment YAML file
-          kubeconfigId: 'my-kubeconfig', // Kubernetes configuration ID defined in Jenkins configuration
-          namespace: "${env.NAMESPACE}" // Use proper syntax to access environment variable
-        )
-      }
+    agent any
+    
+    environment {
+        // Kubernetes namespace'ini belirtin
+        NAMESPACE = 'default'
+        // Uygulama adını belirtin
+        APP_NAME = 'nginx-webapp'
     }
-    stage('Deploy Ingress') {
-      steps {
-        // Create and apply Ingress resource to Kubernetes
-        kubernetesDeploy(
-          configs: 'nginx-ingress.yaml', // Adjust the path to your Ingress YAML file
-          kubeconfigId: 'my-kubeconfig', // Kubernetes configuration ID defined in Jenkins configuration
-          namespace: "${env.NAMESPACE}" // Use proper syntax to access environment variable
-        )
-      }
-    }
-    stage('Test') {
-      steps {
-        // Get Ingress address
-        script {
-          def ingress = sh(script: "kubectl get ingress -n ${env.NAMESPACE} -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}'", returnStdout: true).trim()
-          echo "Ingress address: $ingress"
+
+    stages {
+        stage('Deploy Nginx') {
+            steps {
+                // Nginx podunu Kubernetes'e dağıt
+                script {
+                    sh 'kubectl apply -f nginx-deployment.yaml -n $NAMESPACE'
+                }
+            }
         }
-      }
+        stage('Deploy Ingress') {
+            steps {
+                // Ingress kaynağını oluştur ve Kubernetes'e uygula
+                script {
+                    sh 'kubectl apply -f nginx-ingress.yaml -n $NAMESPACE'
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                // Ingress adresini al
+                script {
+                    sh "kubectl get ingress -n $NAMESPACE"
+                }
+            }
+        }
     }
-  }
 
-  post {
-    success {
-      echo 'Nginx pod and Ingress successfully deployed and tested!'
+    post {
+        success {
+            echo 'Nginx podu ve Ingress başarıyla dağıtıldı ve test edildi!'
+        }
+        failure {
+            echo 'Nginx podu veya Ingress dağıtılırken veya test edilirken hata oluştu.'
+            echo 'Hata ayrıntıları:'
+            echo build.getPreviousBuild().getCauses()
+        }
     }
-    failure {
-      echo 'Error occurred while deploying Nginx pod or Ingress or during testing.'
-      echo 'Error details:'
-      echo build.getPreviousBuild().getCauses()
-    }
-  }
 }
