@@ -13,12 +13,12 @@ pipeline {
     stages {
         stage('Deploy Nginx') {
             steps {
-                kubernetesDeploy(configs: 'nginx-deployment.yaml', kubeconfigId: 'my-kube-config')
+                kubernetesDeploy(configs: 'nginx-deployment.yaml')
             }
         }
         stage('Deploy Ingress') {
             steps {
-                kubernetesDeploy(configs: 'nginx-ingress.yaml', kubeconfigId: 'my-kube-config')
+                kubernetesDeploy(configs: 'nginx-ingress.yaml')
             }
         }
         stage('Test') {
