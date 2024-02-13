@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        kubernetes {
+            // Jenkins ajanının Kubernetes üzerinde çalışmasını sağla
+            label 'my-kubernetes-label'
+        }
+    }
     
     environment {
         // Kubernetes namespace'ini belirtin
@@ -14,30 +19,24 @@ pipeline {
         stage('Deploy Nginx') {
             steps {
                 // Kubeconfig dosyasını ekleyerek Nginx podunu Kubernetes'e dağıt
-                container('kube') {
-                    script {
-                        sh "kubectl --kubeconfig=$KUBECONFIG_PATH apply -f nginx-deployment.yaml -n $NAMESPACE"
-                    }
+                script {
+                    sh "kubectl --kubeconfig=$KUBECONFIG_PATH apply -f nginx-deployment.yaml -n $NAMESPACE"
                 }
             }
         }
         stage('Deploy Ingress') {
             steps {
                 // Kubeconfig dosyasını ekleyerek Ingress kaynağını oluştur ve Kubernetes'e uygula
-                container('kube') {
-                    script {
-                        sh "kubectl --kubeconfig=$KUBECONFIG_PATH apply -f nginx-ingress.yaml -n $NAMESPACE"
-                    }
+                script {
+                    sh "kubectl --kubeconfig=$KUBECONFIG_PATH apply -f nginx-ingress.yaml -n $NAMESPACE"
                 }
             }
         }
         stage('Test') {
             steps {
                 // Kubeconfig dosyasını ekleyerek Ingress adresini al
-                container('kube') {
-                    script {
-                        sh "kubectl --kubeconfig=$KUBECONFIG_PATH get ingress -n $NAMESPACE"
-                    }
+                script {
+                    sh "kubectl --kubeconfig=$KUBECONFIG_PATH get ingress -n $NAMESPACE"
                 }
             }
         }
