@@ -13,12 +13,12 @@ pipeline {
     stages {
         stage('Deploy Nginx') {
             steps {
-                sh "kubectl apply -f nginx-deployment.yaml -n $NAMESPACE"
+                kubernetesDeploy(configs: 'nginx-deployment.yaml', kubeconfigId: 'my-kube-config')
             }
         }
         stage('Deploy Ingress') {
             steps {
-                sh "kubectl apply -f nginx-ingress.yaml -n $NAMESPACE"
+                kubernetesDeploy(configs: 'nginx-ingress.yaml', kubeconfigId: 'my-kube-config')
             }
         }
         stage('Test') {
