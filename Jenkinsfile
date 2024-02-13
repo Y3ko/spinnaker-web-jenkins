@@ -6,30 +6,32 @@ pipeline {
         NAMESPACE = 'default'
         // Uygulama adını belirtin
         APP_NAME = 'nginx-webapp'
+        // Kubeconfig dosyasının yolunu belirtin
+        KUBECONFIG_PATH = "$HOME/master/.kube/config"
     }
 
     stages {
         stage('Deploy Nginx') {
             steps {
-                // Nginx podunu Kubernetes'e dağıt
+                // Kubeconfig dosyasını ekleyerek Nginx podunu Kubernetes'e dağıt
                 script {
-                    sh 'cat $HOME/master/.kube/config | kubectl apply -f - -n $NAMESPACE'
+                    sh "KUBECONFIG=$KUBECONFIG_PATH kubectl apply -f nginx-deployment.yaml -n $NAMESPACE"
                 }
             }
         }
         stage('Deploy Ingress') {
             steps {
-                // Ingress kaynağını oluştur ve Kubernetes'e uygula
+                // Kubeconfig dosyasını ekleyerek Ingress kaynağını oluştur ve Kubernetes'e uygula
                 script {
-                    sh 'cat $HOME/master/.kube/config | kubectl apply -f - -n $NAMESPACE'
+                    sh "KUBECONFIG=$KUBECONFIG_PATH kubectl apply -f nginx-ingress.yaml -n $NAMESPACE"
                 }
             }
         }
         stage('Test') {
             steps {
-                // Ingress adresini al
+                // Kubeconfig dosyasını ekleyerek Ingress adresini al
                 script {
-                    sh "kubectl get ingress -n $NAMESPACE"
+                    sh "KUBECONFIG=$KUBECONFIG_PATH kubectl get ingress -n $NAMESPACE"
                 }
             }
         }
