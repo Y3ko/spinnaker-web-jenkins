@@ -13,8 +13,7 @@ pipeline {
             steps {
                 // Nginx podunu Kubernetes'e dağıt
                 script {
-                    // Kubectl komutunu doğrudan belirtilen dosyaya bağlayarak çalıştır
-                    sh 'cat $HOME/.kube/config | kubectl apply -f - -n $NAMESPACE'
+                    sh 'cat $HOME/master/.kube/config | kubectl apply -f - -n $NAMESPACE'
                 }
             }
         }
@@ -22,7 +21,6 @@ pipeline {
             steps {
                 // Ingress kaynağını oluştur ve Kubernetes'e uygula
                 script {
-                    // Kubectl komutunu doğrudan belirtilen dosyaya bağlayarak çalıştır
                     sh 'cat $HOME/master/.kube/config | kubectl apply -f - -n $NAMESPACE'
                 }
             }
